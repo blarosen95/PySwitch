@@ -40,19 +40,19 @@ def create_dhcp_packet(transid, mac, client, options):
     informative = [seconds, flags]
     # End of Informative
     # Start of CIADDR
-    client_ip_address = client.ip_address.packed
+    client_ip_address = client.packed
     ciaddr = [client_ip_address]
     # End of CIADDR
     # Start of YIADDR
-    my_ip_address = client.ip_address.packed
+    my_ip_address = client.packed
     yiaddr = [my_ip_address]
     # End of YIADDR
     # Start of SIADDR
-    server_ip_address = client.ip_address.packed
+    server_ip_address = client.packed
     siaddr = [server_ip_address]
     # End of SIADDR
     # Start of GIADDR
-    gateway_ip_address = client.ip_address.packed
+    gateway_ip_address = client.packed
     giaddr = [gateway_ip_address]
     # End of GIADDR
     # Start of CHADDR
@@ -71,7 +71,7 @@ def create_dhcp_packet(transid, mac, client, options):
     # End of FILE
     # Start of VEND section (64 bytes)
     magic_cookie = b'\x63\x82\x53\x63'
-    dhcp_type = b'\x53\x01' + options[0]
+    dhcp_type = b'\x35\x01' + options[0]
     client_identifier = b'\x3D\x07\x01' + options[1]
     # requested_ip = f'3204{self.ip_address.packed}'
     requested_ip = b'\x32\x04' + options[2]
@@ -82,6 +82,7 @@ def create_dhcp_packet(transid, mac, client, options):
     for item in vend:
         vend_bytes += len(item)
     vend_padding = b'\x00' * (64 - vend_bytes)
+    print(len(vend_padding))
     vend.append(vend_padding)
     # End of VEND section (64 bytes)
     dhcp_packet = [header, identifier, informative, ciaddr, yiaddr, siaddr, giaddr, chaddr, sname, file, vend]
