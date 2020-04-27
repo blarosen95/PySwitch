@@ -2,6 +2,7 @@ import ipaddress
 import pickle
 import socket
 
+from ipaddress import IPv4Network
 import NetUtils
 
 
@@ -21,7 +22,7 @@ class Client:
         self.mac_bytecode = mac_byte
         self.ip_address = ipaddress.ip_address('0.0.0.0')
         self.gateway = ipaddress.ip_address('255.255.255.255')
-        # TODO: Call the client-side DHCP code and (re)assign the correct values
+        self.subnet_mask = ipaddress.ip_address('255.255.255.0')
 
     def dhcp_discover(self):
         transaction = NetUtils.create_transaction_id()
@@ -88,12 +89,11 @@ class Client:
         print('Exited from broadcasting discovery.')
         # Await "unicast" reply from switch
         offer = self.start_client_dhcp_server()
-        print(offer.get('yiaddr'))
-        # TODO: if offer packet is good, then do the following:
-        # Instantiate DHCPREQUEST packet
-        request = ''
+        self.ip_address = ipaddress.ip_address(offer.get('yiaddr')[0])
+        self.gateway = ipaddress.ip_address(offer.get('siaddr')[0])
 
 
 tester = Client('00:0A:8A:1C:08:DA', b'\x00\x0A\x8A\x1C\x08\xDA')
 
 tester.dhcp_procedure()
+print(f'\nObtained IP address of {tester.ip_address}, with a gateway of {tester.gateway}')
